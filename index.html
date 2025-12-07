@@ -1,94 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Doge Drag Game</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Doge Drag Game</title>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
         crossorigin="anonymous">
 
-    <!-- Custom styles -->
-    <link rel="stylesheet" href="styles.css" />
+  <!-- Project CSS -->
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-            <a class="navbar-brand" href="#">Doge Drag Game</a>
-        </nav>
-    </header>
+  <header>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+      <a class="navbar-brand" href="#">Doge Drag Game</a>
+    </nav>
+  </header>
 
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">✨ Drag the Doge to Earn Points! ✨</h1>
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">✨ Drag the Doge to Earn Points! ✨</h1>
 
-        <p class="text-center lead">
-            Move the Doge around the play area to increase your score.
-            <br />Different zones may give <strong>more points</strong>
-        </p>
+    <p class="text-center lead">
+      Move the Doge around the play area to increase your score.
+      <br />Different zones may give <strong>more points</strong>
+    </p>
 
-        <div class="row mt-4">
-            <!-- Game Area -->
-            <div class="col-xl-8 mb-4">
-                <div id="containment-wrapper" aria-label="play area" role="region">
-                    <!-- Visible scoring zones (simple, subtle) -->
-                    <div class="zone zone-low" data-mult="1" title="Safe Zone">x1</div>
-                    <div class="zone zone-mid" data-mult="2" title="Bonus Zone">x2</div>
-                    <div class="zone zone-high" data-mult="3" title="Ultra Zone">x3</div>
+    <div class="row mt-4">
+      <!-- Game Area -->
+      <div class="col-xl-8 mb-4">
+        <div id="containment-wrapper" aria-label="Play area">
+          <!-- Visible scoring zones -->
+          <div class="zone zone-low" data-multiplier="1" title="Low points zone">+1x</div>
+          <div class="zone zone-high" data-multiplier="2" title="High points zone">x2</div>
 
-                    <!-- Draggable image -->
-                    <img id="doge-meme-pic" style="height: 100px; width:auto;"
-                        src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngmart.com%2Ffiles%2F11%2FDoge-Meme-PNG-Free-Download.png&f=1&nofb=1&ipt=fb032d58b8491c997d446adc07804ae8aa4846257ca840d61f8992f29e0cfa3b"
-                        alt="Doge meme" />
-                </div>
-
-                <div id="wow-output" class="sr-only" aria-hidden="true"></div>
-            </div>
-
-            <!-- Score Panel -->
-            <div class="col-sm-4">
-                <div class="score-box">
-                    <h3 class="text-center">Score</h3>
-                    <h1 id="score-display" class="text-center text-primary">0</h1>
-
-                    <hr />
-
-                    <h5>Progress</h5>
-                    <div class="progress mb-3">
-                        <div id="score-progress" class="progress-bar" role="progressbar" style="width: 0%;">
-                        </div>
-                    </div>
-
-                    <div class="alert alert-info mt-3" id="status-message">
-                        Drag Doge to begin!
-                    </div>
-
-                    <p class="small text-muted mt-4">
-                        Tip: Try dragging Doge near the edges. Something special might happen...
-                    </p>
-                </div>
-            </div>
+          <!-- Draggable Doge -->
+          <img id="doge-meme-pic" style="height: 100px; width:auto;"
+               src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngmart.com%2Ffiles%2F11%2FDoge-Meme-PNG-Free-Download.png&f=1&nofb=1&ipt=fb032d58b8491c997d446adc07804ae8aa4846257ca840d61f8992f29e0cfa3b"
+               alt="Doge meme">
         </div>
+      </div>
+
+      <!-- Score Panel -->
+      <div class="col-sm-4">
+        <div class="score-box">
+          <h3 class="text-center">Score</h3>
+          <h1 id="score-display" class="text-center text-primary">0</h1>
+
+          <hr />
+
+          <h5>Progress</h5>
+          <div class="progress mb-3">
+            <div id="score-progress" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+          </div>
+
+          <div class="alert alert-info mt-3" id="status-message">
+            Drag Doge to begin!
+          </div>
+
+          <!-- legacy output (your script writes to #wow-output) -->
+          <div id="wow-output" class="mt-3 small text-muted"></div>
+
+          <p class="small text-muted mt-4">
+            Tip: Try dragging Doge near the edges. Something special might happen...
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+          crossorigin="anonymous"></script>
 
-    <!-- jQuery UI  -->
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <!-- jQuery UI -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+          integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+          crossorigin="anonymous"></script>
 
-    <!-- Bootstrap JS  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
-        crossorigin="anonymous"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-xrRywqdh3PHs8y+ScvW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"></script>
 
-    <!-- Custom Script -->
-    <script src="scripts.js"></script>
+  <!-- Project Script -->
+  <script src="js/scripts.js"></script>
 </body>
-
 </html>
