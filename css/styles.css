@@ -1,106 +1,126 @@
-/* Google font (import) - no change to HTML required */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap');
 
 body {
-    font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: linear-gradient(135deg, #f7fbff 0%, #eef6ff 50%, #f5f8ff 100%);
-    color: #333;
-    min-height: 100vh;
+    background: linear-gradient(160deg, #eef6ff 0%, #f7fbff 100%);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    color: #222;
 }
 
-/* containment wrapper visual improvements */
+/* containment area */
 #containment-wrapper {
     position: relative;
     height: 400px;
-    border: 2px dashed rgba(60,70,90,0.12);
+    border: 2px dashed #b0c4de;
     border-radius: 10px;
     background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(3px);
-    box-shadow: 0 6px 18px rgba(80,100,140,0.06);
-    padding: 12px;
+    backdrop-filter: blur(2px);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
 }
 
-/* doge image tweaks */
+/* doge */
 #doge-meme-pic {
     cursor: grab;
     height: 100px;
     width: auto;
-    position: absolute; /* jQuery UI uses position */
-    top: 20px;
+    position: absolute;
     left: 20px;
+    top: 20px;
     user-select: none;
     -webkit-user-drag: none;
-    transition: transform 100ms ease;
+    transition: transform 0.06s linear;
 }
+#doge-meme-pic:active { cursor: grabbing; transform: scale(0.98); }
 
-#doge-meme-pic:active {
-    cursor: grabbing;
-    transform: scale(0.98);
-}
-
-/* multiplier zones */
-.multizone {
-    position: absolute;
-    border-radius: 8px;
-    border: 1px solid rgba(0,0,0,0.06);
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 6px;
-    font-weight: 700;
-    color: #444;
-    box-shadow: 0 3px 8px rgba(30,50,80,0.04);
-    font-size: 14px;
-}
-
-/* score card styling */
+/* Score panel styles */
 .score-box {
     background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(30,50,80,0.04);
-    border: 1px solid rgba(0,0,0,0.03);
-    max-width: 280px;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(20,40,80,0.06);
+    border: 1px solid #e6eefb;
+    max-width: 260px;
 }
 
-/* score number */
+/* Score number */
 #score-display {
-    font-size: 36px;
     font-weight: 700;
-    color: #0b5ed7; /* bootstrap primary-ish */
+    color: #1357d6;
+    font-size: 40px;
+    margin: 8px 0;
 }
 
-/* multiplier badge */
+/* Multiplier badge */
 #mult-badge {
-    display: inline-block;
-    background: #6c757d;
-    color: #fff;
+    display:inline-block;
     padding: 4px 8px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 12px;
+    background: #f0f4f9;
+    border: 1px solid #d7e3fb;
+    color:#333;
+    margin-bottom: 8px;
 }
 
-/* progress bar tweaks */
+/* nicer progress bar */
 .progress {
     height: 12px;
-    background: #eef2f6;
-    border-radius: 8px;
+    background: #f1f5fb;
+    border-radius: 6px;
     overflow: hidden;
 }
-
-.progress-bar {
-    background: linear-gradient(90deg, #8ad4ff 0%, #3aa0ff 100%);
-    transition: width 200ms ease;
+#score-progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#8ab4ff,#4a8af9);
+    transition: width 0.12s ease;
 }
 
-/* navbar tweaks */
-.navbar-brand {
-    font-size: 18px;
+/* small hint box */
+.alert-hint {
+    background: #e9f7fb;
+    border: 1px solid #cfeff6;
+    color: #1b5e66;
+    padding: 14px;
+    border-radius: 6px;
+}
+
+/* multiplier zone visuals */
+.zone {
+    position: absolute;
+    border-radius: 8px;
+    pointer-events: none; /* don't block dragging */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    box-shadow: inset 0 -6px 12px rgba(0,0,0,0.06);
+    font-size: 14px;
+    padding: 6px;
+    opacity: 0.95;
 }
 
-/* small helper tip text */
-.score-box p.small {
-    color: #6c757d;
-    margin-bottom: 0;
+/* visible zones */
+.zone.mult2 { background: rgba(72,138,255,0.85); border: 2px solid rgba(72,138,255,0.25); }
+.zone.mult3 { background: rgba(72,208,125,0.9); border: 2px solid rgba(72,208,125,0.25); }
+
+/* hidden/stealth zone */
+.zone.hidden {
+    background: rgba(200,160,255,0.25);
+    border: 1px dashed rgba(120,90,200,0.18);
+    opacity: 0.12;
 }
+
+/* when zones are intentionally hidden */
+.zones-hidden .zone { opacity: 0; }
+
+/* small control button inserted by JS */
+#toggle-zones {
+    display:block;
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* tidy up navbar branding size */
+.navbar-brand { font-size: 16px; font-weight: 600; }
