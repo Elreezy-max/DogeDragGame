@@ -5,86 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Doge Drag Game</title>
 
-  <!-- Google Font -->
+  <!-- Google Font (small aesthetic improvement) -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-        crossorigin="anonymous">
+  <!-- Bootstrap 4.6 CSS (stable with current jquery/ui) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+  <!-- jQuery UI CSS for draggable visuals -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
-    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-      <a class="navbar-brand" href="#">Doge Drag Game</a>
-      <div class="ml-auto text-light small">Drag. Multiply. Win.</div>
+    <nav class="navbar navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="#">Doge Drag Game</a>
+        <small class="text-white-50">Drag. Multiply. Win.</small>
+      </div>
     </nav>
   </header>
 
-  <main class="container mt-4">
-    <h1 class="text-center mb-3 display-5">Drag the Doge to Earn Points</h1>
-    <p class="text-center lead text-muted">
-      Move Doge around the play area to increase your score. Try the special zones for multipliers!
-    </p>
+  <main class="container mt-5">
+    <h1 class="text-center display-4 mb-2">Drag the Doge to Earn Points</h1>
+    <p class="text-center text-muted mb-4">Move Doge around the play area to increase your score. Try the special zones for multipliers!</p>
 
-    <div class="row mt-4">
+    <div class="row justify-content-center">
       <!-- Game Area -->
-      <div class="col-lg-8 mb-4">
-        <div id="containment-wrapper" aria-label="Game area where you can drag the doge" role="region">
-          <!-- scoring zones (visual) -->
-          <div class="zone zone-left">×2</div>
-          <div class="zone zone-right">×3</div>
+      <div class="col-md-7 mb-4">
+        <div id="containment-wrapper" class="shadow-sm">
+          <!-- multiplier zones -->
+          <div class="mult-zone mult-2" data-mult="2">×2</div>
+          <div class="mult-zone mult-3" data-mult="3">×3</div>
 
-          <!-- draggable doge -->
+          <!-- draggable image -->
           <img id="doge-meme-pic"
-               src="https://www.pngmart.com/files/11/Doge-Meme-PNG-Free-Download.png"
-               alt="Doge meme"
-               width="100"
-               height="auto">
+               src="https://i.imgur.com/9bX1hZK.png"
+               alt="Doge"
+               width="120" height="auto">
         </div>
+      </div>
 
       <!-- Score Panel -->
-      <div class="col-lg-4">
+      <div class="col-md-4">
         <div class="score-box card">
-          <div class="card-body">
-            <h5 class="card-title text-center">Score</h5>
-            <h1 id="score-display" class="text-center text-primary mb-1">0</h1>
+          <div class="card-body text-center">
+            <h5 class="card-title">Score</h5>
+            <h2 id="score-display" class="display-4 text-primary">0</h2>
 
-            <div class="text-center mb-2">
-              <span id="multiplier-badge" class="badge badge-secondary">×1</span>
+            <div class="mb-2">
+              <span class="badge badge-secondary" id="mult-badge">×1</span>
             </div>
 
-            <div class="progress mb-3" aria-hidden="false">
-              <div id="score-progress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+            <div class="progress mb-3" style="height:10px;">
+              <div id="score-progress" class="progress-bar" role="progressbar" style="width:0%"></div>
             </div>
 
-            <div class="alert alert-info" id="status-message" role="status">
+            <div class="alert alert-info" id="status-message">
               Drag Doge to begin!
             </div>
 
-            <hr>
-            <p class="small text-muted mb-0">Tip: Drag Doge into a colored zone to get multipliers. Reach 1000 for max wow!</p>
+            <p class="small text-muted text-left mt-3">
+              Tip: Drag Doge into a colored zone to get multipliers. Reach 1000 for max wow!
+            </p>
           </div>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- jQuery & jQuery UI -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-          crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-          integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-          crossorigin="anonymous"></script>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-xrRywqdh3PHs8Jp7myc6kqv4Q1Qq5eR0i5kP2a3nYB6Q3r6e6nJw9WZ7xjF2jL7y"
-          crossorigin="anonymous"></script>
+  <!-- Scripts: jQuery -> jQuery UI -> Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Custom Script -->
   <script src="scripts.js"></script>
