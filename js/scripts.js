@@ -1,104 +1,92 @@
 $(function () {
     console.log("document is ready!");
 
-    //
-    // Create multiplier zones 
-    //
-    function createMultiplierZones() {
-        $("#containment-wrapper .multizone").remove();
-        const zones = [
-            { id: "zone-x2", label: "×2", top: "10%", left: "5%", width: "18%", height: "20%", multiplier: 2, color: "#d1f0e1" },
-            { id: "zone-x3", label: "×3", top: "60%", left: "60%", width: "28%", height: "30%", multiplier: 3, color: "#fde7d9" }
-        ];
+    var $container = $("#containment-wrapper");
 
-        zones.forEach(function(z){
-            const $z = $("<div></div>")
-                .addClass("multizone")
-                .attr("id", z.id)
-                .css({
-                    top: z.top,
-                    left: z.left,
-                    width: z.width,
-                    height: z.height,
-                    background: z.color
-                })
-                .data("multiplier", z.multiplier)
-                .text(z.label);
+    var zones = [
+        {cls: "mult2", leftPct: 8, topPct: 6, wPct: 20, hPct: 30, mult: 2, label: "×2"},
+        {cls: "mult3", leftPct: 60, topPct: 50, wPct: 28, hPct: 36, mult: 3, label: "×3"},
+        // hidden/stealth zone (smaller)
+        {cls: "hidden", leftPct: 36, topPct: 15, wPct: 18, hPct: 18, mult: 4, label: "×4 (hidden)"}
+    ];
 
-            $("#containment-wrapper").append($z);
+    $container.addClass("zones-hidden"); // start hidden (user can show)
+
+    zones.forEach(function(z, idx){
+        var $z = $("<div class='zone'></div>");
+        $z.addClass(z.cls);
+        $z.css({
+            left: z.leftPct + "%",
+            top: z.topPct + "%",
+            width: z.wPct + "%",
+            height: z.hPct + "%",
+            "text-align": "center"
         });
+        $z.attr("data-multiplier", z.mult);
+        $z.text(z.label);
+        $container.append($z);
+        z.$el = $z;
+    });
+
+    var $toggleBtn = $('<button id="toggle-zones" class="btn btn-outline-primary btn-sm">Show Zones</button>');
+    $(".score-box").prepend($toggleBtn);
+
+    $toggleBtn.on("click", function(){
+        var hidden = $container.hasClass("zones-hidden");
+        if(hidden){
+            $container.removeClass("zones-hidden");
+            $(this).text("Hide Zones");
+            $container.find(".hidden").css("opacity", 0.6);
+        } else {
+            $container.addClass("zones-hidden");
+            $(this).text("Show Zones");
+            $container.find(".hidden").css("opacity", 0.12);
+        }
+    });
+
+    if ($("#mult-badge").length === 0) {
+        $("<div id='mult-badge'>×1</div>").insertAfter("#score-display");
     }
 
-    createMultiplierZones();
-
-    //
-    // 1. MAKE DOGE DRAGGABLE
-    //
     $("#doge-meme-pic").draggable({
         containment: "#containment-wrapper",
         scroll: false,
         drag: function () {
-            calculateWow();   // live scoring as user drags
+            calculateWow();   
         },
         stop: function () {
-            calculateWow();   // final update
+            calculateWow();   
         }
     });
 
-    //
-    // 2. DOGE SCORE CALCULATION (with multiplier zones)
-    //
-    function getActiveMultiplier() {
-        // Get doge center position relative to containment wrapper
-        const $doge = $("#doge-meme-pic");
-        const $wrap = $("#containment-wrapper");
-        const dogePos = $doge.position();
-        const dogeW = $doge.outerWidth();
-        const dogeH = $doge.outerHeight();
+    function calculateWow() {
+        var $doge = $("#doge-meme-pic");
+        var pos = $doge.position(); 
+        var dogeW = $doge.outerWidth();
+        var dogeH = $doge.outerHeight();
+        var centerX = pos.left + dogeW / 2;
+        var centerY = pos.top + dogeH / 2;
 
-        const dogeCenterX = dogePos.left + dogeW / 2;
-        const dogeCenterY = dogePos.top + dogeH / 2;
+        var base = Math.floor(pos.top + pos.left);
+        if (base < 0) base = 0;
 
-        let activeMultiplier = 1;
-
-        // Check each zone: if doge center is inside the zone, use the zone's multiplier
-        $("#containment-wrapper .multizone").each(function () {
-            const $z = $(this);
-            const zLeft = $z.position().left;
-            const zTop = $z.position().top;
-            const zRight = zLeft + $z.outerWidth();
-            const zBottom = zTop + $z.outerHeight();
-
-            if (dogeCenterX >= zLeft && dogeCenterX <= zRight && dogeCenterY >= zTop && dogeCenterY <= zBottom) {
-                const zoneMult = Number($z.data("multiplier")) || 1;
-                // If multiple zones overlap (unlikely), choose the highest multiplier
-                if (zoneMult > activeMultiplier) activeMultiplier = zoneMult;
+        var multiplier = 1;
+        zones.forEach(function(z){
+            var el = z.$el;
+            if (!el || el.length === 0) return;
+            var rect = {
+                left: el.position().left,
+                top: el.position().top,
+                right: el.position().left + el.outerWidth(),
+                bottom: el.position().top + el.outerHeight()
+            };
+            if (centerX >= rect.left && centerX <= rect.right && centerY >= rect.top && centerY <= rect.bottom) {
+                multiplier = Math.max(multiplier, parseInt(el.attr("data-multiplier") || 1, 10));
             }
         });
 
-        return activeMultiplier;
-    }
+        var score = base * multiplier;
 
-    function calculateWow() {
-        var pos = $("#doge-meme-pic").position();
-
-        // base score value (simple and predictable for learning)
-        var baseScore = Math.floor(pos.top + pos.left);
-
-        // determine multiplier
-        const multiplier = getActiveMultiplier();
-
-        // apply multiplier (but keep integer)
-        var score = Math.floor(baseScore * multiplier);
-
-        // cap progress metric at 1000
-        const cappedScoreForProgress = Math.max(0, Math.min(score, 1000));
-
-        //
-        // UI UPDATES
-        //
-
-        // Legacy wow-output (if present on page)
         if ($("#wow-output").length) {
             if (score < 500) {
                 $("#wow-output").html('<h2>not much wow (' + score + ')</h2>');
@@ -107,48 +95,31 @@ $(function () {
             }
         }
 
-        // Score text
         $("#score-display").text(score);
 
-        // Multiplier badge (create if missing)
-        if ($("#mult-badge").length === 0) {
-            $("<div id='mult-badge' class='badge badge-secondary text-uppercase mt-2'>x1</div>").insertAfter("#score-progress");
-        }
         $("#mult-badge").text("×" + multiplier);
 
-        // Progress bar (max 1000)
-        var percent = Math.min((cappedScoreForProgress / 1000) * 100, 100);
-        $("#score-progress").css({
-            "width": percent + "%",
-            "transition": "width 200ms ease"
-        });
+        var percent = Math.min((score / 1000) * 100, 100);
+        $("#score-progress").css("width", percent + "%");
 
-        // Status message
-        if (score < 0) {
-            $("#status-message").text("Doge is confused... HOW DID YOU DO DIS");
-        }
-        else if (score < 300) {
-            $("#status-message").text("Doge is warming up...");
+        var status = "";
+        if (score <= 50) {
+            status = "Doge is warming up...";
+        } else if (score < 300) {
+            status = "Doge is getting stronger...";
         } else if (score < 600) {
-            $("#status-message").text("Wow! Doge is gaining power!");
+            status = "Wow! Doge is gaining power!";
         } else if (score < 900) {
-            $("#status-message").text("Much skill. Very drag. Wow.");
+            status = "Much skill. Very drag. Wow.";
         } else {
-            $("#status-message").text("MAXIMUM WOW ACHIEVED! 💥🐶");
+            status = "MAXIMUM WOW ACHIEVED! 💥🐶";
         }
+        if (multiplier > 1) {
+            status += " (Multiplier: ×" + multiplier + ")";
+        }
+        $("#status-message").text(status);
     }
 
     calculateWow();
-
-    // Recreate zones on window resize to stay consistent with layout (mild nicety)
-    $(window).on("resize", function () {
-        // small debounce
-        clearTimeout(window._zoneResizeTimer);
-        window._zoneResizeTimer = setTimeout(function () {
-            // zones are percent-based so no need to recreate here, but keep in case you change behavior
-            // createMultiplierZones();
-            calculateWow();
-        }, 150);
-    });
 });
 
