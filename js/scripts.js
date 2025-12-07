@@ -2,14 +2,10 @@ $(function () {
     console.log("document is ready!");
 
     //
-    // Create multiplier zones dynamically inside the containment wrapper
+    // Create multiplier zones 
     //
     function createMultiplierZones() {
-        // Remove existing zones if any (helps when reloading)
         $("#containment-wrapper .multizone").remove();
-
-        // Simple zones: small rectangles placed in the play area
-        // Positions are percentage-based so they'll work with the fixed container size
         const zones = [
             { id: "zone-x2", label: "×2", top: "10%", left: "5%", width: "18%", height: "20%", multiplier: 2, color: "#d1f0e1" },
             { id: "zone-x3", label: "×3", top: "60%", left: "60%", width: "28%", height: "30%", multiplier: 3, color: "#fde7d9" }
@@ -142,7 +138,6 @@ $(function () {
         }
     }
 
-    // initial call to set UI correctly
     calculateWow();
 
     // Recreate zones on window resize to stay consistent with layout (mild nicety)
