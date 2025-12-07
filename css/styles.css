@@ -33,7 +33,7 @@ body {
   transform: scale(0.98);
 }
 
-/* scoring zones: subtle overlays inside the area */
+/* scoring zones */
 .zone {
   position: absolute;
   top: 10%;
