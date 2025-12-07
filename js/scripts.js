@@ -1,151 +1,159 @@
 $(function () {
-  console.log("document ready");
+    console.log("document is ready!");
 
-  //
-  // AUDIO: small beep using WebAudio API for max score
-  //
-  let audioCtx = null;
-  function playBeep(frequency = 880, duration = 0.08) {
-    if (!window.AudioContext && !window.webkitAudioContext) return;
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.connect(g);
-    g.connect(audioCtx.destination);
-    o.type = "sine";
-    o.frequency.value = frequency;
-    g.gain.value = 0.04;
-    o.start();
-    setTimeout(() => {
-      o.stop();
-    }, duration * 1000);
-  }
+    //
+    // Create multiplier zones dynamically inside the containment wrapper
+    //
+    function createMultiplierZones() {
+        // Remove existing zones if any (helps when reloading)
+        $("#containment-wrapper .multizone").remove();
 
-  //
-  // 1. MAKE DOGE DRAGGABLE
-  //
-  $("#doge-meme-pic").draggable({
-    containment: "#containment-wrapper",
-    scroll: false,
-    drag: function () {
-      calculateWow();   // live scoring as user drags
-    },
-    stop: function () {
-      calculateWow();   // final update
-    }
-  });
+        // Simple zones: small rectangles placed in the play area
+        // Positions are percentage-based so they'll work with the fixed container size
+        const zones = [
+            { id: "zone-x2", label: "×2", top: "10%", left: "5%", width: "18%", height: "20%", multiplier: 2, color: "#d1f0e1" },
+            { id: "zone-x3", label: "×3", top: "60%", left: "60%", width: "28%", height: "30%", multiplier: 3, color: "#fde7d9" }
+        ];
 
-  //
-  // 2. SCORING ZONES
-  // define zones as rectangles in px relative to the wrapper
-  //
-  function getZoneRects() {
-    const $wrap = $("#containment-wrapper");
-    const wrapOffset = $wrap.offset();
-    const wrapW = $wrap.width();
-    const wrapH = $wrap.height();
+        zones.forEach(function(z){
+            const $z = $("<div></div>")
+                .addClass("multizone")
+                .attr("id", z.id)
+                .css({
+                    top: z.top,
+                    left: z.left,
+                    width: z.width,
+                    height: z.height,
+                    background: z.color
+                })
+                .data("multiplier", z.multiplier)
+                .text(z.label);
 
-    // left zone: 6% from left, 28% width (match CSS)
-    const leftX = wrapOffset.left + wrapW * 0.06;
-    const leftW = wrapW * 0.28;
-    const leftY = wrapOffset.top + wrapH * 0.10;
-    const leftH = wrapH * 0.80;
-
-    // right zone: 6% from right
-    const rightX = wrapOffset.left + wrapW * (1 - 0.06 - 0.28);
-    const rightW = wrapW * 0.28;
-    const rightY = leftY;
-    const rightH = leftH;
-
-    return {
-      left: { x: leftX, y: leftY, w: leftW, h: leftH, multiplier: 2 },
-      right: { x: rightX, y: rightY, w: rightW, h: rightH, multiplier: 3 }
-    };
-  }
-
-  //
-  // 3. DOGE SCORE CALCULATION
-  //
-  function calculateWow() {
-    const $doge = $("#doge-meme-pic");
-    const $wrap = $("#containment-wrapper");
-
-    // position relative to wrapper
-    // position() gives top/left relative to offset parent (wrapper is positioned)
-    const pos = $doge.position(); // top/left relative to wrapper
-    const dogeW = $doge.outerWidth();
-    const dogeH = $doge.outerHeight();
-
-    // compute "base score" as integer using top + left (like before)
-    const baseScore = Math.max(0, Math.floor(pos.top + pos.left));
-
-    // compute center coordinates in page coordinates to test zones
-    const wrapOffset = $wrap.offset();
-    const centerX = wrapOffset.left + pos.left + dogeW / 2;
-    const centerY = wrapOffset.top + pos.top + dogeH / 2;
-
-    // determine multiplier from zones
-    const zones = getZoneRects();
-    let multiplier = 1;
-
-    // check left
-    const l = zones.left;
-    if (centerX >= l.x && centerX <= l.x + l.w && centerY >= l.y && centerY <= l.y + l.h) {
-      multiplier = Math.max(multiplier, l.multiplier);
-    }
-    // check right
-    const r = zones.right;
-    if (centerX >= r.x && centerX <= r.x + r.w && centerY >= r.y && centerY <= r.y + r.h) {
-      multiplier = Math.max(multiplier, r.multiplier);
+            $("#containment-wrapper").append($z);
+        });
     }
 
-    // final score with multiplier
-    const score = baseScore * multiplier;
+    createMultiplierZones();
 
-    // update debug output (legacy)
-    if (score < 500) {
-      $("#wow-output").html('<strong>not much wow </strong>(' + score + ')');
-    } else {
-      $("#wow-output").html('<strong>so much wow</strong> (' + score + ')');
+    //
+    // 1. MAKE DOGE DRAGGABLE
+    //
+    $("#doge-meme-pic").draggable({
+        containment: "#containment-wrapper",
+        scroll: false,
+        drag: function () {
+            calculateWow();   // live scoring as user drags
+        },
+        stop: function () {
+            calculateWow();   // final update
+        }
+    });
+
+    //
+    // 2. DOGE SCORE CALCULATION (with multiplier zones)
+    //
+    function getActiveMultiplier() {
+        // Get doge center position relative to containment wrapper
+        const $doge = $("#doge-meme-pic");
+        const $wrap = $("#containment-wrapper");
+        const dogePos = $doge.position();
+        const dogeW = $doge.outerWidth();
+        const dogeH = $doge.outerHeight();
+
+        const dogeCenterX = dogePos.left + dogeW / 2;
+        const dogeCenterY = dogePos.top + dogeH / 2;
+
+        let activeMultiplier = 1;
+
+        // Check each zone: if doge center is inside the zone, use the zone's multiplier
+        $("#containment-wrapper .multizone").each(function () {
+            const $z = $(this);
+            const zLeft = $z.position().left;
+            const zTop = $z.position().top;
+            const zRight = zLeft + $z.outerWidth();
+            const zBottom = zTop + $z.outerHeight();
+
+            if (dogeCenterX >= zLeft && dogeCenterX <= zRight && dogeCenterY >= zTop && dogeCenterY <= zBottom) {
+                const zoneMult = Number($z.data("multiplier")) || 1;
+                // If multiple zones overlap (unlikely), choose the highest multiplier
+                if (zoneMult > activeMultiplier) activeMultiplier = zoneMult;
+            }
+        });
+
+        return activeMultiplier;
     }
 
-    // ---- UI UPDATES ----
-    $("#score-display").text(score);
+    function calculateWow() {
+        var pos = $("#doge-meme-pic").position();
 
-    // multiplier badge
-    $("#multiplier-badge")
-      .text("×" + multiplier)
-      .removeClass("badge-secondary badge-success badge-warning")
-      .addClass(multiplier === 1 ? "badge-secondary" : multiplier === 2 ? "badge-warning" : "badge-success");
+        // base score value (simple and predictable for learning)
+        var baseScore = Math.floor(pos.top + pos.left);
 
-    // progress bar: treat 1000 as max (as before)
-    const percent = Math.min((score / 1000) * 100, 100);
-    $("#score-progress").css("width", percent + "%");
+        // determine multiplier
+        const multiplier = getActiveMultiplier();
 
-    // status message (slightly friendlier + mention multiplier)
-    let status = "";
-    if (score < 300) {
-      status = "Doge is warming up...";
-    } else if (score < 600) {
-      status = "Wow! Doge is gaining power!";
-    } else if (score < 900) {
-      status = "Much skill. Very drag. Wow.";
-    } else {
-      status = "MAXIMUM WOW ACHIEVED! 💥🐶";
+        // apply multiplier (but keep integer)
+        var score = Math.floor(baseScore * multiplier);
+
+        // cap progress metric at 1000
+        const cappedScoreForProgress = Math.max(0, Math.min(score, 1000));
+
+        //
+        // UI UPDATES
+        //
+
+        // Legacy wow-output (if present on page)
+        if ($("#wow-output").length) {
+            if (score < 500) {
+                $("#wow-output").html('<h2>not much wow (' + score + ')</h2>');
+            } else {
+                $("#wow-output").html('<h2>so much wow (' + score + ')!!</h2>');
+            }
+        }
+
+        // Score text
+        $("#score-display").text(score);
+
+        // Multiplier badge (create if missing)
+        if ($("#mult-badge").length === 0) {
+            $("<div id='mult-badge' class='badge badge-secondary text-uppercase mt-2'>x1</div>").insertAfter("#score-progress");
+        }
+        $("#mult-badge").text("×" + multiplier);
+
+        // Progress bar (max 1000)
+        var percent = Math.min((cappedScoreForProgress / 1000) * 100, 100);
+        $("#score-progress").css({
+            "width": percent + "%",
+            "transition": "width 200ms ease"
+        });
+
+        // Status message
+        if (score < 0) {
+            $("#status-message").text("Doge is confused... HOW DID YOU DO DIS");
+        }
+        else if (score < 300) {
+            $("#status-message").text("Doge is warming up...");
+        } else if (score < 600) {
+            $("#status-message").text("Wow! Doge is gaining power!");
+        } else if (score < 900) {
+            $("#status-message").text("Much skill. Very drag. Wow.");
+        } else {
+            $("#status-message").text("MAXIMUM WOW ACHIEVED! 💥🐶");
+        }
     }
 
-    if (multiplier > 1) {
-      status += " (multiplier ×" + multiplier + ")";
-    }
+    // initial call to set UI correctly
+    calculateWow();
 
-    $("#status-message").text(status);
-
-    // small audio cue when hitting max (>= 1000)
-    if (score >= 1000) {
-      playBeep(880, 0.10);
-    }
-  }
-
-  // initial calculation so UI is consistent on load
-  calculateWow();
+    // Recreate zones on window resize to stay consistent with layout (mild nicety)
+    $(window).on("resize", function () {
+        // small debounce
+        clearTimeout(window._zoneResizeTimer);
+        window._zoneResizeTimer = setTimeout(function () {
+            // zones are percent-based so no need to recreate here, but keep in case you change behavior
+            // createMultiplierZones();
+            calculateWow();
+        }, 150);
+    });
 });
+
