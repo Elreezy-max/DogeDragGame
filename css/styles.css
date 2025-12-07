@@ -1,78 +1,106 @@
-/* font + palette */
+/* Google font (import) - no change to HTML required */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap');
+
 body {
-  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(135deg, #f7fbff 0%, #e9f2ff 100%);
-  color: #1f2937;
-  padding-bottom: 40px;
+    font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(135deg, #f7fbff 0%, #eef6ff 50%, #f5f8ff 100%);
+    color: #333;
+    min-height: 100vh;
 }
 
-/* containment wrapper */
+/* containment wrapper visual improvements */
 #containment-wrapper {
-  position: relative;
-  height: 420px;
-  border: 2px dashed rgba(31,41,55,0.15);
-  border-radius: 12px;
-  background: rgba(255,255,255,0.85);
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(31,41,55,0.06);
-  padding: 18px;
+    position: relative;
+    height: 400px;
+    border: 2px dashed rgba(60,70,90,0.12);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(3px);
+    box-shadow: 0 6px 18px rgba(80,100,140,0.06);
+    padding: 12px;
 }
 
-/* doge image */
+/* doge image tweaks */
 #doge-meme-pic {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  width: 100px;
-  height: auto;
-  cursor: grab;
-  transition: transform 120ms ease;
+    cursor: grab;
+    height: 100px;
+    width: auto;
+    position: absolute; /* jQuery UI uses position */
+    top: 20px;
+    left: 20px;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform 100ms ease;
 }
+
 #doge-meme-pic:active {
-  cursor: grabbing;
-  transform: scale(0.98);
+    cursor: grabbing;
+    transform: scale(0.98);
 }
 
-/* scoring zones */
-.zone {
-  position: absolute;
-  top: 10%;
-  bottom: 10%;
-  width: 28%;
-  border-radius: 8px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-weight:600;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
-  pointer-events: none; /* allow dragging through zone */
-  opacity: 0.85;
-  font-size: 1.1rem;
-}
-.zone-left {
-  left: 6%;
-  background: linear-gradient(180deg, rgba(99,102,241,0.95), rgba(79,70,229,0.9)); /* indigo-ish */
-}
-.zone-right {
-  right: 6%;
-  background: linear-gradient(180deg, rgba(16,185,129,0.95), rgba(5,150,105,0.9)); /* green-ish */
+/* multiplier zones */
+.multizone {
+    position: absolute;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 6px;
+    font-weight: 700;
+    color: #444;
+    box-shadow: 0 3px 8px rgba(30,50,80,0.04);
+    font-size: 14px;
 }
 
-/* score box styling */
+/* score card styling */
 .score-box {
-  border-radius: 12px;
-  overflow: hidden;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(30,50,80,0.04);
+    border: 1px solid rgba(0,0,0,0.03);
+    max-width: 280px;
+}
+
+/* score number */
+#score-display {
+    font-size: 36px;
+    font-weight: 700;
+    color: #0b5ed7; /* bootstrap primary-ish */
 }
 
 /* multiplier badge */
-#multiplier-badge {
-  font-size: 1rem;
-  padding: 0.55rem 0.75rem;
+#mult-badge {
+    display: inline-block;
+    background: #6c757d;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
 }
 
-/* small tweaks for headings */
+/* progress bar tweaks */
+.progress {
+    height: 12px;
+    background: #eef2f6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #8ad4ff 0%, #3aa0ff 100%);
+    transition: width 200ms ease;
+}
+
+/* navbar tweaks */
 .navbar-brand {
-  font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
 }
 
+/* small helper tip text */
+.score-box p.small {
+    color: #6c757d;
+    margin-bottom: 0;
+}
